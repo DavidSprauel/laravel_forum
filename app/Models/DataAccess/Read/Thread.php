@@ -13,11 +13,11 @@ class Thread  extends BaseReader {
         $this->model = ThreadModel::class;
     }
     
-    public function latest(Channel $channel = null) {
-        $threads =  $this->model::latest();
+    public function latestWithFilter(Channel $channel = null, $filters) {
+        $threads = $this->model::latest()->filter($filters);
         
         if(!is_null($channel)) {
-            $threads = $channel->threads()->latest();
+            $threads = $threads->where('channel_id', $channel->id);
         }
         
         return $threads->get();

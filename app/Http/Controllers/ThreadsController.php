@@ -2,6 +2,7 @@
 
 namespace Forum\Http\Controllers;
 
+use Forum\Filters\ThreadFilters;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread;
@@ -10,14 +11,20 @@ use Illuminate\Http\Request;
 class ThreadsController extends Controller {
     
     protected $threadBusiness;
+    protected $filters = ['by', 'popularity'];
     
     public function __construct() {
         $this->middleware('auth')->except(['index', 'show']);
         $this->threadBusiness = new ThreadBusiness();
     }
     
-    public function index(Channel $channel = null) {
-        $threads = $this->threadBusiness->latest($channel);
+    public function index(Channel $channel = null, ThreadFilters $filters) {
+        $threads = $this->getThreads($channel, $filters);
+        
+        if(request()->wantsJson()) {
+            return $threads;
+        }
+        
         return view('threads.index', compact('threads'));
     }
     
@@ -43,7 +50,11 @@ class ThreadsController extends Controller {
     }
     
     public function show($channelId, Thread $thread) {
-        return view('threads.show', compact('thread'));
+        $thread->load('replies');
+        return view('threads.show', [
+            'thread' => $thread,
+            'replies' => $thread->replies()->paginate(25)
+        ]);
     }
     
     public function edit(Thread $thread) {
@@ -56,5 +67,11 @@ class ThreadsController extends Controller {
     
     public function destroy(Thread $thread) {
         //
+    }
+    
+    private function getThreads(Channel $channel = null, ThreadFilters $filters) {
+        $threads = $this->threadBusiness->latestWithFilter($channel, $filters);
+        
+        return $threads;
     }
 }

@@ -16,7 +16,6 @@ class Thread extends BaseBusiness {
         $this->write = new ThreadWrite();
     }
     
-    
     public function addReply(ThreadModel $thread, array $request) {
         return $this->write->addReply($thread, $request);
     }
@@ -25,10 +24,25 @@ class Thread extends BaseBusiness {
         return $this->write->create($fields);
     }
     
-    public function latest(Channel $channel = null) {
-        return $this->read->latest($channel);
+    public function latestWithFilter(Channel $channel = null, $filters) {
+        return $this->read->latestWithFilter($channel, $filters);
     }
-
-
+    
+    private function by($value, $filters) {
+        $userBusiness = $userBusiness = new User();
+        $user = $userBusiness->getBy(['name' => $value]);
+        
+        $filters['user_id'] = $user->id;
+        return $filters;
+    }
+    
+    private function popularity() {
+    
+    }
+    
+    private function hasFilter($key) {
+        return method_exists($this, $key);
+    }
+    
     
 }

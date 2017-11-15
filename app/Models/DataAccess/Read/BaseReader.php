@@ -12,4 +12,8 @@ abstract class BaseReader {
         return $this->model::latest()->get();
     }
     
+    public function all() {
+        return $this->model::all();
+    }
+    
 }

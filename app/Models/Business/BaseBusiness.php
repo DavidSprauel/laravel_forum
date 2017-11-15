@@ -13,4 +13,8 @@ abstract class BaseBusiness {
         return $this->read->latest();
     }
     
+    public function all() {
+        return $this->read->all();
+    }
+    
 }

@@ -2,6 +2,7 @@
 
 namespace Forum\Providers;
 
+use Forum\Models\Business\Channel;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $channelBusiness = new Channel();
+        \View::composer('*', function($view) use ($channelBusiness){
+             $view->with('channels', $channelBusiness->all());
+        });
     }
 
     /**
