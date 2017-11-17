@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Forum\Models\DataAcces\Write;
+namespace Forum\Models\DataAccess\Write;
 
 
 class User  extends BaseWriter {

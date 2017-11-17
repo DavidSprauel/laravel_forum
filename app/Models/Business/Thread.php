@@ -4,8 +4,8 @@
 namespace Forum\Models\Business;
 
 
-use Forum\Models\DataAcces\Read\Thread as ThreadRead;
-use Forum\Models\DataAcces\Write\Thread as ThreadWrite;
+use Forum\Models\DataAccess\Read\Thread as ThreadRead;
+use Forum\Models\DataAccess\Write\Thread as ThreadWrite;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread as ThreadModel;
 

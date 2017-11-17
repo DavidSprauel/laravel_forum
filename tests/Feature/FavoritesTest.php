@@ -32,4 +32,12 @@ class FavoritesTest extends TestCase {
         $this->post('replies/'.$this->reply->id.'/favorites');
         $this->assertCount(1, $this->reply->favorites);
     }
+    /** @test */
+    public function a_user_may_only_favorite_a_reply_once() {
+        $this->signIn();
+    
+        $this->post('replies/'.$this->reply->id.'/favorites');
+        $this->post('replies/'.$this->reply->id.'/favorites');
+        $this->assertCount(1, $this->reply->favorites);
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Forum\Models\DataAcces\Read;
+namespace Forum\Models\DataAccess\Read;
 
 
 abstract class BaseReader {

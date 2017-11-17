@@ -4,14 +4,17 @@
 namespace Forum\Models\Business;
 
 
+use Forum\Models\DataAccess\Read\Favorite as FavoriteRead;
+use Forum\Models\DataAccess\Write\Favorite as FavoriteWrite;
+
 class Favorite extends BaseBusiness {
     
     public function __construct() {
-        $this->read = \Forum\Models\DataAcces\Read\Favorite::class;
-        $this->write = \Forum\Models\DataAcces\Write\Favorite::class;
+        $this->read = new FavoriteRead;
+        $this->write = new FavoriteWrite;
     }
     
-    public function store($data) {
-        return $this->write->insert($data);
+    public function store($reply) {
+        return $this->write->insert($reply);
     }
 }

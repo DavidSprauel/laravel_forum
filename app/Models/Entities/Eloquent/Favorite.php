@@ -4,7 +4,9 @@ namespace Forum\Models\Entities\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Favorite extends Model
-{
-    //
+class Favorite extends Model {
+    
+    protected $guarded = [];
+    
+   
 }

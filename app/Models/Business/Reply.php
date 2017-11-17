@@ -4,8 +4,8 @@
 namespace Forum\Models\Business;
 
 
-use Forum\Models\DataAcces\Read\Reply as ReplyRead;
-use Forum\Models\DataAcces\Write\Reply as ReplyWrite;
+use Forum\Models\DataAccess\Read\Reply as ReplyRead;
+use Forum\Models\DataAccess\Write\Reply as ReplyWrite;
 
 class Reply extends BaseBusiness {
     

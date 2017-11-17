@@ -26,3 +26,5 @@ Route::get('threads/{channel}', ThreadsController::class.'@index');
 
 Route::resource('threads/{channel}/{thread}/replies', RepliesController::class);
 Route::resource('/replies/{reply}/favorites', FavoritesController::class, ['only' => ['store']]);
+
+Route::get('profiles/{user}', ProfilesController::class.'@show');

@@ -2,6 +2,7 @@
 
 namespace Forum\Providers;
 
+use Cache;
 use Forum\Models\Business\Channel;
 use Illuminate\Support\ServiceProvider;
 
@@ -16,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $channelBusiness = new Channel();
         \View::composer('*', function($view) use ($channelBusiness){
-             $view->with('channels', $channelBusiness->all());
+            $channels = Cache::rememberForever('channels', function() use ($channelBusiness){
+                return $channelBusiness->all();
+            });
+            
+             $view->with('channels', $channels);
         });
     }
 

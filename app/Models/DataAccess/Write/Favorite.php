@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Forum\Models\DataAcces\Write;
+namespace Forum\Models\DataAccess\Write;
 
 
 class Favorite extends BaseWriter {
@@ -10,7 +10,7 @@ class Favorite extends BaseWriter {
         $this->model = \Forum\Models\Entities\Eloquent\Favorite::class;
     }
     
-    public function insert($data) {
-        return $this->model::insert($data);
+    public function insert($reply) {
+        return $reply->favorite();
     }
 }
