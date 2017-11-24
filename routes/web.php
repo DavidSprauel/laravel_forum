@@ -22,9 +22,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('threads', ThreadsController::class, ['except' => 'show']);
 Route::get('threads/{channel}/{thread}', ThreadsController::class.'@show');
+Route::delete('threads/{channel}/{thread}', ThreadsController::class.'@destroy');
 Route::get('threads/{channel}', ThreadsController::class.'@index');
 
 Route::resource('threads/{channel}/{thread}/replies', RepliesController::class);
 Route::resource('/replies/{reply}/favorites', FavoritesController::class, ['only' => ['store']]);
 
-Route::get('profiles/{user}', ProfilesController::class.'@show');
+Route::get('profiles/{user}', ProfilesController::class.'@show')->name('profile');

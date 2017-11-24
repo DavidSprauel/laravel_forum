@@ -28,21 +28,14 @@ class Thread extends BaseBusiness {
         return $this->read->latestWithFilter($channel, $filters);
     }
     
-    private function by($value, $filters) {
-        $userBusiness = $userBusiness = new User();
-        $user = $userBusiness->getBy(['name' => $value]);
+    public function delete(ThreadModel $thread) {
+        $this->write->delete($thread);
+    
+        if(request()->wantsJson()) {
+            return response([], 204);
+        }
         
-        $filters['user_id'] = $user->id;
-        return $filters;
+        return redirect('/threads');
     }
-    
-    private function popularity() {
-    
-    }
-    
-    private function hasFilter($key) {
-        return method_exists($this, $key);
-    }
-    
     
 }

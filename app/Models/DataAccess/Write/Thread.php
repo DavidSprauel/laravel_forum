@@ -16,4 +16,8 @@ class Thread extends BaseWriter {
         $thread->replies()->create($request);
     }
     
+    public function delete(ThreadModel $thread) {
+        return $thread->delete();
+    }
+    
 }

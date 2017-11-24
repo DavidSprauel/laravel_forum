@@ -64,8 +64,12 @@ class ThreadsController extends Controller {
         //
     }
     
-    public function destroy(Thread $thread) {
-        //
+    public function destroy(Channel $channel, Thread $thread) {
+        $this->authorize('update', $thread);
+        
+        $return = $this->threadBusiness->delete($thread);
+        
+        return $return;
     }
     
     private function getThreads(Channel $channel = null, ThreadFilters $filters) {

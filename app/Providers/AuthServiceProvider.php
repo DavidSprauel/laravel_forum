@@ -2,6 +2,8 @@
 
 namespace Forum\Providers;
 
+use Forum\Models\Entities\Eloquent\Thread;
+use Forum\Policies\ThreadPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -14,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'Forum\Model' => 'Forum\Policies\ModelPolicy',
+        Thread::class => ThreadPolicy::class
     ];
 
     /**
@@ -25,6 +28,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::before(function($user) {
+            if($user->name === 'David Sprauel') {
+                return true;
+            }
+        });
     }
 }

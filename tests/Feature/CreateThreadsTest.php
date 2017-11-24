@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Forum\Models\Entities\Eloquent\Channel;
+use Forum\Models\Entities\Eloquent\Reply;
 use Forum\Models\Entities\Eloquent\Thread;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -63,5 +64,36 @@ class CreateThreadsTest extends TestCase {
         $thread = make(Thread::class, $overrides);
     
         return $this->post('/threads', $thread->toArray());
+    }
+    
+    /** @test */
+    public function unauthorized_users_may_not_delete_threads() {
+        $this->withExceptionHandling();
+        $thread = create(Thread::class);
+        
+        $this->delete($thread->path())
+            ->assertRedirect('/login');
+        
+        $this->signIn();
+        $this->delete($thread->path())
+            ->assertStatus(403);
+    }
+    
+    /** @test */
+//    public function thread_can_only_be_deleted_by_those_who_have_permission() {
+//
+//    }
+    
+    /** @test */
+    public function authorized_users_can_delete_threads() {
+        $this->signIn();
+        $thread = create(Thread::class, ['user_id' => auth()->id()]);
+        $reply = create(Reply::class, ['thread_id' => $thread->id]);
+        
+        $response = $this->json('DELETE', $thread->path());
+        $response->assertStatus(204);
+        
+        $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
     }
 }

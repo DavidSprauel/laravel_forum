@@ -2,9 +2,13 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
+use Forum\Models\Business\Activity;
+use Forum\Models\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model {
+    
+    use RecordsActivity;
     
     protected $guarded = [];
     protected $with = ['creator', 'channel'];
@@ -14,7 +18,12 @@ class Thread extends Model {
         static::addGlobalScope('replyCount', function($builder) {
             $builder->withCount('replies');
         });
+        
+        static::deleting(function($thread) {
+            $thread->replies()->delete();
+        });
     }
+    
     
     public function path() {
         return "/threads/{$this->channel->slug}/{$this->id}";
@@ -35,4 +44,5 @@ class Thread extends Model {
     public function scopeFilter($query, $filters) {
         return $filters->apply($query);
     }
+    
 }
