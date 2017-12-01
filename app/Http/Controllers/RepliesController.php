@@ -5,6 +5,7 @@ namespace Forum\Http\Controllers;
 use Forum\Models\Business\Reply;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
+use Forum\Models\Entities\Eloquent\Reply as ReplyModel;
 use Forum\Models\Entities\Eloquent\Thread;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,19 @@ class RepliesController extends Controller
             'body' => request('body'),
             'user_id' => auth()->id()
         ]);
+        
+        return back()->with('flash', 'Your reply has been left.');
+    }
+    
+    public function update(ReplyModel $reply) {
+        $this->authorize('update', $reply);
+        return $this->replyBusiness->update($reply, request()->all());
+    }
+    
+    public function destroy(ReplyModel $reply) {
+        $this->authorize('update', $reply);
+        
+        $this->replyBusiness->delete($reply);
         
         return back();
     }

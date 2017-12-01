@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Forum\Models\Entities\Eloquent\Activity;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Reply;
 use Forum\Models\Entities\Eloquent\Thread;
@@ -89,11 +90,21 @@ class CreateThreadsTest extends TestCase {
         $this->signIn();
         $thread = create(Thread::class, ['user_id' => auth()->id()]);
         $reply = create(Reply::class, ['thread_id' => $thread->id]);
-        
+    
         $response = $this->json('DELETE', $thread->path());
         $response->assertStatus(204);
         
         $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+        
+        $this->assertDatabaseMissing('activities', [
+            'subject_id' => $thread->id,
+            'subject_type' => get_class($thread),
+        ]);
+    
+        $this->assertDatabaseMissing('activities', [
+            'subject_id' => $reply->id,
+            'subject_type' => get_class($reply),
+        ]);
     }
 }

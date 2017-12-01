@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $channelBusiness = new Channel();
+        
         \View::composer('*', function($view) use ($channelBusiness){
             $channels = Cache::rememberForever('channels', function() use ($channelBusiness){
                 return $channelBusiness->all();

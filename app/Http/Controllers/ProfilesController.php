@@ -2,6 +2,7 @@
 
 namespace Forum\Http\Controllers;
 
+use Forum\Models\Business\Activity;
 use Forum\Models\Business\User;
 use Forum\Models\Entities\Eloquent\User as UserModel;
 use Illuminate\Http\Request;
@@ -9,15 +10,17 @@ use Illuminate\Http\Request;
 class ProfilesController extends Controller {
     
     protected $userBusiness;
+    protected $activityBusiness;
     
     public function __construct() {
         $this->userBusiness = new User();
+        $this->activityBusiness = new Activity();
     }
     
     public function show(UserModel $user) {
         return view('profiles.show', [
             'profileUser' => $user,
-            'threads' => $user->threads()->paginate(30)
+            'activities' => $this->activityBusiness->getFeed($user),
         ]);
     }
 }

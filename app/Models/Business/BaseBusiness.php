@@ -17,4 +17,8 @@ abstract class BaseBusiness {
         return $this->read->all();
     }
     
+    public function delete($entity) {
+        return $this->write->delete($entity);
+    }
+    
 }

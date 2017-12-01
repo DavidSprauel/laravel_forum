@@ -28,4 +28,19 @@ class User extends Authenticatable {
     public function profilePath() {
         return '/profiles/'.$this->name;
     }
+    
+    public function activity() {
+        return $this->hasMany(Activity::class);
+    }
+    
+    public function getLatestActivities() {
+        return $this->activity()
+            ->latest()
+            ->with('subject')
+            ->take(50)
+            ->get()
+            ->groupBy(function($activity){
+                return $activity->created_at->format('Y-m-d');
+            });
+    }
 }

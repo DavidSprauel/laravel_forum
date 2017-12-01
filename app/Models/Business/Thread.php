@@ -28,8 +28,8 @@ class Thread extends BaseBusiness {
         return $this->read->latestWithFilter($channel, $filters);
     }
     
-    public function delete(ThreadModel $thread) {
-        $this->write->delete($thread);
+    public function deleteOne(ThreadModel $thread) {
+        $this->write->deleteOne($thread);
     
         if(request()->wantsJson()) {
             return response([], 204);

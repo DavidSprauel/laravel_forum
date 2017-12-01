@@ -12,4 +12,8 @@ abstract class BaseWriter {
         return $this->model::create($fields);
     }
     
+    public function delete($entity) {
+        return $entity->delete();
+    }
+    
 }

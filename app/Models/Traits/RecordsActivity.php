@@ -17,10 +17,14 @@ trait RecordsActivity {
                 $model->recordActivity($event);
             });
         }
+        
+        static::deleting(function ($model) {
+             $model->activity()->delete();
+        });
     }
     
     protected static function getActivitiesToRecord() {
-        return ['created', 'deleted', 'updated'];
+        return ['created', 'updated'];
     }
     
     protected function recordActivity($event) {
