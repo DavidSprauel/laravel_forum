@@ -12,6 +12,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <script>
+        window.App = {!! json_encode([
+            'signedIn' => auth()->check(),
+            'user' => auth()->user(),
+        ]) !!};
+    </script>
+
     <style>
         body { padding-bottom: 100px; }
         .level { display: flex; align-items: center }

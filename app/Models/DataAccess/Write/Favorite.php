@@ -10,7 +10,11 @@ class Favorite extends BaseWriter {
         $this->model = \Forum\Models\Entities\Eloquent\Favorite::class;
     }
     
-    public function insert($reply) {
-        return $reply->favorite();
+    public function insert($entity) {
+        return $entity->favorite();
+    }
+    
+    public function delete($entity) {
+        return $entity->unfavorite();
     }
 }

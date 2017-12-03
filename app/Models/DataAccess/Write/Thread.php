@@ -13,7 +13,7 @@ class Thread extends BaseWriter {
     }
     
     public function addReply(ThreadModel $thread, array $request) {
-        $thread->replies()->create($request);
+        return $thread->replies()->create($request);
     }
     
     public function deleteOne(ThreadModel $thread) {

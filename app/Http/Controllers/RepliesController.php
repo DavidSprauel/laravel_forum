@@ -13,12 +13,18 @@ class RepliesController extends Controller
 {
     protected $replyBusiness;
     protected $threadBusiness;
+    protected $limit;
     
     public function __construct() {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['index']]);
         
         $this->replyBusiness = new Reply();
         $this->threadBusiness = new ThreadBusiness();
+        $this->limit = 10;
+    }
+    
+    public function index($channelId, Thread $thread) {
+        return $this->replyBusiness->getRepliesPaginated($thread, $this->limit);
     }
     
     public function store($channel, Thread $thread) {
@@ -26,10 +32,14 @@ class RepliesController extends Controller
             'body' => 'required'
         ]);
         
-        $this->threadBusiness->addReply($thread, [
+        $reply = $this->threadBusiness->addReply($thread, [
             'body' => request('body'),
             'user_id' => auth()->id()
         ]);
+        
+        if(request()->expectsJson()) {
+            return $reply->load('owner');
+        }
         
         return back()->with('flash', 'Your reply has been left.');
     }
@@ -43,6 +53,10 @@ class RepliesController extends Controller
         $this->authorize('update', $reply);
         
         $this->replyBusiness->delete($reply);
+        
+        if(request()->expectsJson()) {
+            return response(['status' => 'Reply deleted']);
+        }
         
         return back();
     }

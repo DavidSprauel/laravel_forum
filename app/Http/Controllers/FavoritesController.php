@@ -19,4 +19,8 @@ class FavoritesController extends Controller {
         
         return back();
     }
+    
+    public function destroy(Reply $reply) {
+        $this->favoriteBusiness->delete($reply);
+    }
 }

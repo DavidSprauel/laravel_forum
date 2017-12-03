@@ -10,8 +10,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ParticipateInForumTest extends TestCase
-{
+class ParticipateInForumTest extends TestCase {
+    
     use DatabaseMigrations;
     
     protected $thread;
@@ -26,7 +26,7 @@ class ParticipateInForumTest extends TestCase
         
         $reply = create(Reply::class);
         $this->withExceptionHandling()
-            ->post($this->thread->path().'/replies', $reply->toArray())
+            ->post($this->thread->path() . '/replies', $reply->toArray())
             ->assertRedirect('/login');
     }
     
@@ -36,18 +36,19 @@ class ParticipateInForumTest extends TestCase
         
         $reply = make(Reply::class);
         
-        $this->post($this->thread->path().'/replies', $reply->toArray());
-        $this->get($this->thread->path())
-            ->assertSee($reply->body);
+        $this->post($this->thread->path() . '/replies', $reply->toArray());
+        $this->get($this->thread->path());
+        $this->assertDatabaseHas('replies', ['body' => $reply->body]);
+        $this->assertEquals(1, $this->thread->fresh()->replies_count);
     }
     
     /** @test */
     public function a_reply_needs_a_body() {
         $this->withExceptionHandling()->signIn();
-    
+        
         $reply = make(Reply::class, ['body' => null]);
-    
-        $this->post($this->thread->path().'/replies', $reply->toArray())
+        
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
             ->assertSessionHasErrors('body');
     }
     
@@ -58,7 +59,7 @@ class ParticipateInForumTest extends TestCase
         
         $this->delete("/replies/{$reply->id}")
             ->assertRedirect('/login');
-    
+        
         $this->signIn()
             ->delete("/replies/{$reply->id}")
             ->assertStatus(403);
@@ -68,9 +69,10 @@ class ParticipateInForumTest extends TestCase
     public function authorized_users_can_delete_replies() {
         $this->signIn();
         $reply = create(Reply::class, ['user_id' => auth()->id()]);
-    
+        
         $this->delete("/replies/{$reply->id}")->assertStatus(302);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+        $this->assertEquals(0, $reply->thread->fresh()->replies_count);
     }
     
     /** @test */
@@ -82,7 +84,7 @@ class ParticipateInForumTest extends TestCase
         
         $this->patch("/replies/{$reply->id}", ['body' => $updatedReply]);
         $this->assertDatabaseHas('replies', [
-            'id' => $reply->id,
+            'id'   => $reply->id,
             'body' => $updatedReply
         ]);
     }
@@ -91,10 +93,10 @@ class ParticipateInForumTest extends TestCase
     public function unauthorized_user_can_not_update_replies() {
         $this->withExceptionHandling();
         $reply = create(Reply::class);
-    
+        
         $this->patch("/replies/{$reply->id}")
             ->assertRedirect('/login');
-    
+        
         $this->signIn()
             ->patch("/replies/{$reply->id}")
             ->assertStatus(403);

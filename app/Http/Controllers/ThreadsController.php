@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class ThreadsController extends Controller {
     
     protected $threadBusiness;
-    protected $filters = ['by', 'popularity'];
+    protected $filters = ['by', 'popularity', 'unanswered'];
     
     public function __construct() {
         $this->middleware('auth')->except(['index', 'show']);
@@ -51,10 +51,7 @@ class ThreadsController extends Controller {
     }
     
     public function show($channelId, Thread $thread) {
-        return view('threads.show', [
-            'thread' => $thread,
-            'replies' => $thread->replies()->paginate(25)
-        ]);
+        return view('threads.show', compact('thread'));
     }
     
     public function edit(Thread $thread) {
