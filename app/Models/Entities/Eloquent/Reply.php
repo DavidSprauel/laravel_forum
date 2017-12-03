@@ -21,9 +21,8 @@ class Reply extends Model {
             $reply->thread->increment('replies_count');
     
             $reply->thread->subscriptions
-                ->filter(function($sub) use($reply) {
-                    return $sub->user_id != $reply->user_id;
-                })->each->notify($reply);
+                ->where('user_id', '!=', $reply->user_id)
+                ->each->notify($reply);
         });
     
         static::deleted(function($reply) {
