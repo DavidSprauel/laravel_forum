@@ -16,12 +16,11 @@ class Thread extends Model {
     
     protected static function boot() {
         parent::boot();
-        
+    
         static::deleting(function ($thread) {
             $thread->replies->each->delete();
         });
     }
-    
     
     public function path() {
         return "/threads/{$this->channel->slug}/{$this->id}";
@@ -65,6 +64,10 @@ class Thread extends Model {
         return $this->subscriptions()
             ->where('user_id', $userId ? : auth()->id())
             ->delete();
+    }
+    
+    public function hasUpdatesFor($user = null) {
+        return $this->updated_at > cache($user->visitedCacheKey($this));
     }
     
 }

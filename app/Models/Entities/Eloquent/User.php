@@ -2,6 +2,7 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -42,5 +43,13 @@ class User extends Authenticatable {
             ->groupBy(function($activity){
                 return $activity->created_at->format('Y-m-d');
             });
+    }
+    
+    public function visitedCacheKey($thread) {
+        return sprintf('users.%s.visists.%s', $this->id, $thread->id);
+    }
+    
+    public function read($thread) {
+        cache()->forever($this->visitedCacheKey($thread), Carbon::now());
     }
 }

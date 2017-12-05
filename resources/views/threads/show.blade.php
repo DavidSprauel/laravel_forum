@@ -32,9 +32,6 @@
                     <replies @removed="repliesCount--"
                              @added="repliesCount++"></replies>
 
-                    {{--{{ $replies->links() }}--}}
-
-
                 </div>
 
                 <div class="col-md-4">

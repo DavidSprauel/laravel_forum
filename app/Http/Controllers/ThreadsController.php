@@ -2,6 +2,7 @@
 
 namespace Forum\Http\Controllers;
 
+use Carbon\Carbon;
 use Forum\Filters\ThreadFilters;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
@@ -51,6 +52,10 @@ class ThreadsController extends Controller {
     }
     
     public function show($channelId, Thread $thread) {
+        if(auth()->check()) {
+            auth()->user()->read($thread->id);
+        }
+        
         return view('threads.show', compact('thread'));
     }
     
