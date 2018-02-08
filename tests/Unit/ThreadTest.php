@@ -65,6 +65,7 @@ class ThreadTest extends TestCase {
             'user_id' => 999
         ]);
         
+        
         Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);
     }
     

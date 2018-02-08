@@ -2,6 +2,7 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
+use Carbon\Carbon;
 use Forum\Models\Traits\Favoritable;
 use Forum\Models\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,10 @@ class Reply extends Model {
     
     public function path() {
         return $this->thread->path() . "#reply-{$this->id}";
+    }
+    
+    public function wasJustPublished() {
+        return $this->created_at->gt(Carbon::now()->subMinute());
     }
     
 }

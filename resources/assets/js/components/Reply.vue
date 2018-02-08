@@ -4,7 +4,7 @@
             <div class="level">
                 <h5 class="flex">
                     <a :href="'/profiles/' + data.owner.name"
-                        v-text="data.owner.name">
+                       v-text="data.owner.name">
                     </a> said <span v-text="ago"></span>
                 </h5>
 
@@ -26,14 +26,14 @@
         </div>
 
         <!--@can('update', $reply)-->
-            <div class="panel-footer level" v-if="canUpdate">
-                <button class="btn btn-xs mr-1" @click="editing = true">
-                    Edit
-                </button>
-                <button class="btn btn-xs mr-1 btn-danger" @click="destroy">
-                    Delete
-                </button>
-            </div>
+        <div class="panel-footer level" v-if="canUpdate">
+            <button class="btn btn-xs mr-1" @click="editing = true">
+                Edit
+            </button>
+            <button class="btn btn-xs mr-1 btn-danger" @click="destroy">
+                Delete
+            </button>
+        </div>
         <!--@endcan-->
     </div>
 </template>
@@ -71,12 +71,16 @@
 
         methods: {
             update() {
-                axios.patch('/replies/' + this.data.id, {
-                    body: this.body
-                });
+                axios.patch('/replies/' + this.data.id, { body: this.body})
+                    .then(({data}) => {
+                        this.editing = false;
+                        flash('Your reply has been updated!');
+                    })
+                    .catch(error => {
+                        flash(error.response.data, 'danger');
+                    });
 
-                this.editing = false;
-                flash('Your reply has been updated!');
+
             },
 
             destroy() {

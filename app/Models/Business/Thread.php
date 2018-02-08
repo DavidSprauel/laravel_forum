@@ -20,8 +20,13 @@ class Thread extends BaseBusiness {
         return $this->write->addReply($thread, $request);
     }
     
-    public function create($fields) {
-        return $this->write->create($fields);
+    public function create($request) {
+        return $this->write->create([
+            'user_id' => auth()->id(),
+            'channel_id' => $request['channel_id'],
+            'title' => $request['title'],
+            'body' => $request['body'],
+        ]);
     }
     
     public function latestWithFilter(Channel $channel = null, $filters) {

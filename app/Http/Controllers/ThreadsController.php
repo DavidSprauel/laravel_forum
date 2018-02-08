@@ -4,9 +4,11 @@ namespace Forum\Http\Controllers;
 
 use Carbon\Carbon;
 use Forum\Filters\ThreadFilters;
+use Forum\Library\Inspections\Spam;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread;
+use Forum\Rules\SpamFree;
 use Illuminate\Http\Request;
 
 class ThreadsController extends Controller {
@@ -22,7 +24,7 @@ class ThreadsController extends Controller {
     public function index(Channel $channel = null, ThreadFilters $filters) {
         $threads = $this->getThreads($channel, $filters);
         
-        if(request()->wantsJson()) {
+        if (request()->wantsJson()) {
             return $threads;
         }
         
@@ -33,27 +35,22 @@ class ThreadsController extends Controller {
         return view('threads.create');
     }
     
-    public function store(Request $request) {
-        $this->validate($request, [
-            'title' => 'required',
-            'body' => 'required',
+    public function store() {
+        request()->validate([
+            'title'      => ['required', new SpamFree],
+            'body'       => ['required', new SpamFree],
             'channel_id' => 'required|exists:channels,id',
         ]);
         
-        $thread = $this->threadBusiness->create([
-            'user_id' => auth()->id(),
-            'channel_id' => request('channel_id'),
-            'title' => request('title'),
-            'body' => request('body'),
-        ]);
+        $thread = $this->threadBusiness->create(request()->all());
         
         return redirect($thread->path())
             ->with('flash', 'Your thread has been published');
     }
     
     public function show($channelId, Thread $thread) {
-        if(auth()->check()) {
-            auth()->user()->read($thread->id);
+        if (auth()->check()) {
+            auth()->user()->read($thread);
         }
         
         return view('threads.show', compact('thread'));

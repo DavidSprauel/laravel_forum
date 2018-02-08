@@ -27845,7 +27845,9 @@ window.Vue.prototype.authorize = function (handler) {
 };
 
 window.flash = function (message) {
-    window.events.$emit('flash', message);
+    var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
+
+    window.events.$emit('flash', { message: message, level: level });
 };
 
 /***/ }),
@@ -59165,6 +59167,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['message'],
@@ -59172,6 +59176,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             body: '',
+            level: 'success',
             show: false
         };
     },
@@ -59182,15 +59187,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.flash(this.message);
         }
 
-        window.events.$on('flash', function (message) {
-            _this.flash(message);
+        window.events.$on('flash', function (data) {
+            _this.flash(data);
         });
     },
 
 
     methods: {
-        flash: function flash(message) {
-            this.body = message;
+        flash: function flash(data) {
+            this.body = data.message;
+            this.level = data.level;
             this.show = true;
 
             this.hide();
@@ -59213,17 +59219,15 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      directives: [
-        { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
-      ],
-      staticClass: "alert alert-success alert-dismissible flashMessage",
-      attrs: { role: "alert" }
-    },
-    [_c("strong", [_vm._v("Success!")]), _vm._v(" " + _vm._s(_vm.body) + "\n")]
-  )
+  return _c("div", {
+    directives: [
+      { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
+    ],
+    staticClass: "alert alert-dismissible flashMessage",
+    class: "alert-" + _vm.level,
+    attrs: { role: "alert" },
+    domProps: { textContent: _vm._s(_vm.body) }
+  })
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -59559,12 +59563,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         update: function update() {
-            axios.patch('/replies/' + this.data.id, {
-                body: this.body
-            });
+            var _this2 = this;
 
-            this.editing = false;
-            flash('Your reply has been updated!');
+            axios.patch('/replies/' + this.data.id, { body: this.body }).then(function (_ref) {
+                var data = _ref.data;
+
+                _this2.editing = false;
+                flash('Your reply has been updated!');
+            }).catch(function (error) {
+                flash(error.response.data, 'danger');
+            });
         },
         destroy: function destroy() {
             axios.delete('/replies/' + this.data.id);
@@ -60051,7 +60059,7 @@ var render = function() {
                   }
                 }
               },
-              [_vm._v("\n                Edit\n            ")]
+              [_vm._v("\n            Edit\n        ")]
             ),
             _vm._v(" "),
             _c(
@@ -60060,7 +60068,7 @@ var render = function() {
                 staticClass: "btn btn-xs mr-1 btn-danger",
                 on: { click: _vm.destroy }
               },
-              [_vm._v("\n                Delete\n            ")]
+              [_vm._v("\n            Delete\n        ")]
             )
           ])
         : _vm._e()
@@ -60178,6 +60186,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 flash('Your reply has been posted!');
                 _this.$emit('created', response.data);
+            }).catch(function (error) {
+                flash(error.response.data, 'danger');
             });
         }
     }
