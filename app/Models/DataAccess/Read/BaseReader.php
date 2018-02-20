@@ -16,4 +16,16 @@ abstract class BaseReader {
         return $this->model::all();
     }
     
+    public function getBy($where, $first = false, $nb = null) {
+        if($first) {
+            return $this->model::where($where)->first();
+        }
+        
+        if(!is_null($nb)) {
+            return $this->model::where($where)->take($nb)->get();
+        }
+        
+        return $this->model::where($where)->get();
+    }
+    
 }

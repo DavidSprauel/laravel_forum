@@ -7,7 +7,7 @@
         </div>
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body text-justify">
         {{ $body }}
     </div>
 </div>

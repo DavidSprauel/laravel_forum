@@ -3,6 +3,7 @@
 namespace Forum\Models\Entities\Eloquent;
 
 use Carbon\Carbon;
+use Forum\Events\ThreadReceivedNewReply;
 use Forum\Models\Traits\Favoritable;
 use Forum\Models\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
@@ -20,10 +21,7 @@ class Reply extends Model {
         
         static::created(function($reply) {
             $reply->thread->increment('replies_count');
-    
-            $reply->thread->subscriptions
-                ->where('user_id', '!=', $reply->user_id)
-                ->each->notify($reply);
+            event(new ThreadReceivedNewReply($reply));
         });
     
         static::deleted(function($reply) {
@@ -45,6 +43,16 @@ class Reply extends Model {
     
     public function wasJustPublished() {
         return $this->created_at->gt(Carbon::now()->subMinute());
+    }
+    
+    public function mentionedUsers() {
+        preg_match_all('/@([\w\-]+)/', $this->body, $matches);
+        
+        return $matches[1];
+    }
+    
+    public function setBodyAttribute($body) {
+        $this->attributes['body'] = preg_replace('/@([\w\-]+)/', '<a href="/profiles/$1">$0</a>', $body);
     }
     
 }

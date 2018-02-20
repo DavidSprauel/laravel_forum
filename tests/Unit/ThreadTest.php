@@ -11,6 +11,7 @@ use Forum\Notifications\ThreadWasUpdated;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Notification;
+use Redis;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -110,5 +111,18 @@ class ThreadTest extends TestCase {
     
             $this->assertFalse($this->thread->hasUpdatesFor($user));
         });
+    }
+    
+    /** @test */
+    public function a_thread_records_each_visits() {
+    
+        $this->thread->resetVisits();
+        $this->assertSame(0, $this->thread->visits());
+        
+        $this->thread->recordsVisit();
+        $this->assertEquals(1, $this->thread->visits());
+    
+        $this->thread->recordsVisit();
+        $this->assertEquals(2, $this->thread->visits());
     }
 }

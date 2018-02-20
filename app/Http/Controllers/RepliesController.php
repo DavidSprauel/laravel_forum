@@ -36,16 +36,9 @@ class RepliesController extends Controller {
     public function update(ReplyModel $reply) {
         $this->authorize('update', $reply);
         
-        try {
-            request()->validate([
-                'body' => ['required', new SpamFree]
-            ]);
-            $reply = $this->replyBusiness->update($reply, request()->all());
-        } catch (\Exception $e) {
-            return response('Sorry, your reply could not be saved at this time.', 422);
-        }
+        $this->validate(request(), ['body' => ['required', new SpamFree]]);
         
-        return $reply;
+        return $this->replyBusiness->update($reply, request()->all());
     }
     
     public function destroy(ReplyModel $reply) {

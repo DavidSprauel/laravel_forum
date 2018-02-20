@@ -5,6 +5,8 @@ namespace Forum\Http\Forms;
 use Forum\Exceptions\ThrottleException;
 use Forum\Models\Business\Thread;
 use Forum\Models\Entities\Eloquent\Reply;
+use Forum\Models\Entities\Eloquent\User;
+use Forum\Notifications\YouWereMentioned;
 use Forum\Rules\SpamFree;
 use Illuminate\Foundation\Http\FormRequest;
 

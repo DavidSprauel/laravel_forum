@@ -2,13 +2,13 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
-use Forum\Models\Business\Activity;
 use Forum\Models\Traits\RecordsActivity;
+use Forum\Models\Traits\RecordsVisits;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model {
     
-    use RecordsActivity;
+    use RecordsActivity, RecordsVisits;
     
     protected $guarded = [];
     protected $with = ['creator', 'channel'];
@@ -16,7 +16,7 @@ class Thread extends Model {
     
     protected static function boot() {
         parent::boot();
-    
+        
         static::deleting(function ($thread) {
             $thread->replies->each->delete();
         });
@@ -54,7 +54,7 @@ class Thread extends Model {
     
     public function subscribe($userId = null) {
         $this->subscriptions()->create([
-            'user_id'   => $userId ? : auth()->id(),
+            'user_id' => $userId ? : auth()->id(),
         ]);
         
         return $this;

@@ -43,3 +43,7 @@ Route::delete('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionCont
 
 Route::delete('/replies/{reply}/favorites', FavoritesController::class.'@destroy');
 
+
+Route::resource('api/users', 'Api\UsersController');
+Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
+

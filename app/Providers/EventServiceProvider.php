@@ -13,8 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Forum\Events\Event' => [
-            'Forum\Listeners\EventListener',
+        'Forum\Events\ThreadReceivedNewReply' => [
+            'Forum\Listeners\NotifyMentionedUsers',
+            'Forum\Listeners\NotifySubscribers',
         ],
     ];
 

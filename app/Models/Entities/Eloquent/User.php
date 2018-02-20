@@ -11,7 +11,7 @@ class User extends Authenticatable {
     use Notifiable;
     
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'avatar_path'
     ];
     
     protected $hidden = [
@@ -55,5 +55,9 @@ class User extends Authenticatable {
     
     public function lastReply() {
         return $this->hasOne(Reply::class)->latest();
+    }
+    
+    public function getAvatarPathAttribute($avatar) {
+        return asset($avatar ?? 'avatars/default.png');
     }
 }

@@ -21,11 +21,21 @@ class MentionUsersTest extends TestCase {
         $jane  = create(User::class, ['name' => 'JaneDoe']);
         $thread = create(Thread::class);
         $reply = make(Reply::class, [
-            'body' => '@JaneDoe look at this.'
+            'body' => '@JaneDoe look at this. Also @FrankDoe'
         ]);
         
         $this->json('post', $thread->path() . '/replies', $reply->toArray());
         
         $this->assertCount(1, $jane->notifications);
+    }
+    
+    /** @test */
+    public function it_can_fetch_all_mentioned_users_starting_with_the_given_character() {
+        create(User::class, ['name' => 'JohnDoe']);
+        create(User::class, ['name' => 'JohnDoe2']);
+        create(User::class, ['name' => 'JaneDoe']);
+        
+        $results = $this->json('GET', '/api/users', ['name' => 'john']);
+        $this->assertCount(2, $results->json());
     }
 }

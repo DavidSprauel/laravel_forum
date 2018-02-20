@@ -2,9 +2,8 @@
 
 namespace Forum\Http\Controllers;
 
-use Carbon\Carbon;
 use Forum\Filters\ThreadFilters;
-use Forum\Library\Inspections\Spam;
+use Forum\Library\Trending;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread;
@@ -21,14 +20,17 @@ class ThreadsController extends Controller {
         $this->threadBusiness = new ThreadBusiness();
     }
     
-    public function index(Channel $channel = null, ThreadFilters $filters) {
+    public function index(Channel $channel = null, ThreadFilters $filters, Trending $trending) {
         $threads = $this->getThreads($channel, $filters);
         
         if (request()->wantsJson()) {
             return $threads;
         }
-        
-        return view('threads.index', compact('threads'));
+    
+        return view('threads.index', [
+            'threads' => $threads,
+            'trending' => $trending->get()
+        ]);
     }
     
     public function create() {
@@ -48,10 +50,13 @@ class ThreadsController extends Controller {
             ->with('flash', 'Your thread has been published');
     }
     
-    public function show($channelId, Thread $thread) {
+    public function show($channelId, Thread $thread, Trending $trending) {
         if (auth()->check()) {
             auth()->user()->read($thread);
         }
+        
+        $trending->push($thread);
+        $thread->recordsVisit();
         
         return view('threads.show', compact('thread'));
     }
