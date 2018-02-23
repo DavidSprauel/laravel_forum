@@ -2,13 +2,13 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
+use Forum\Library\Visits;
 use Forum\Models\Traits\RecordsActivity;
-use Forum\Models\Traits\RecordsVisits;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model {
     
-    use RecordsActivity, RecordsVisits;
+    use RecordsActivity;
     
     protected $guarded = [];
     protected $with = ['creator', 'channel'];
@@ -68,6 +68,10 @@ class Thread extends Model {
     
     public function hasUpdatesFor($user = null) {
         return $this->updated_at > cache($user->visitedCacheKey($this));
+    }
+    
+    public function visits() {
+        return new Visits($this);
     }
     
 }
