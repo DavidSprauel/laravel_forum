@@ -16,4 +16,8 @@ class User  extends BaseWriter {
         return auth()->user()->update($data);
     }
     
+    public function update(UserModel $user, $columns) {
+        return $user->update($columns);
+    }
+    
 }

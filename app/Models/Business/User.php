@@ -25,4 +25,14 @@ class User  extends BaseBusiness {
         return $this->write->uploadAvatar($data);
     }
     
+    public function getByFirst($where) {
+        return $this->read->getBy($where, true);
+    }
+    
+    public function confirm(UserModel $user) {
+        return $this->write->update($user, [
+            'confirmed' => true
+        ]);
+    }
+    
 }

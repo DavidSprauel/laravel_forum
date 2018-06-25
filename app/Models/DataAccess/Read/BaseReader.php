@@ -18,7 +18,7 @@ abstract class BaseReader {
     
     public function getBy($where, $first = false, $nb = null) {
         if($first) {
-            return $this->model::where($where)->first();
+            return $this->model::where($where)->firstOrFail();
         }
         
         if(!is_null($nb)) {
