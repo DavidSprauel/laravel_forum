@@ -72,6 +72,22 @@ class CreateThreadsTest extends TestCase {
             ->assertSessionHasErrors('channel_id');
     }
     
+    /** @test */
+    public function a_thread_requires_an_unique_slug() {
+        $this->signIn();
+        $thread = create(Thread::class, ['title' => 'Foo Title', 'slug' => 'foo-title']);
+        
+        $this->assertEquals($thread->fresh()->slug, 'foo-title');
+        
+        $this->post(route('threads.store'), $thread->toArray());
+        
+        $this->assertTrue(Thread::whereSlug('foo-title-2')->exists());
+    
+        $this->post(route('threads.store'), $thread->toArray());
+    
+        $this->assertTrue(Thread::whereSlug('foo-title-3')->exists());
+    }
+    
     public function publishThread($overrides = []) {
         $this->withExceptionHandling()->signIn();
         $thread = make(Thread::class, $overrides);

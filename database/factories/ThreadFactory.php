@@ -6,6 +6,8 @@ use Forum\Models\Entities\Eloquent\Thread;
 use Forum\Models\Entities\Eloquent\User;
 
 $factory->define(Thread::class, function (Faker $faker) {
+    $title = $faker->sentence();
+    
     return [
         'user_id' => function() {
             return factory(User::class)->create()->id;
@@ -13,7 +15,8 @@ $factory->define(Thread::class, function (Faker $faker) {
         'channel_id' => function () {
             return factory(Channel::class)->create()->id;
         },
-        'title' => $faker->sentence(),
-        'body' => $faker->paragraph()
+        'title' => $title,
+        'body' => $faker->paragraph(),
+        'slug' => str_slug($title)
     ];
 });
