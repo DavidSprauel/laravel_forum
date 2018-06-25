@@ -31,7 +31,8 @@ class User  extends BaseBusiness {
     
     public function confirm(UserModel $user) {
         return $this->write->update($user, [
-            'confirmed' => true
+            'confirmed' => true,
+            'confirmation_token' => null
         ]);
     }
     

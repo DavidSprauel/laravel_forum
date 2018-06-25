@@ -30,7 +30,7 @@ Route::resource('/replies/{reply}/favorites', FavoritesController::class, [
     'only' => ['store']
 ]);
 
-Route::get('/register/confirm', 'Api\RegisterConfirmationController@index')->name('register.confirm');
+Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
 Route::get('profiles/{user}', ProfilesController::class.'@show')->name('profile');
 Route::get('profiles/{user}/notifications', 'UserNotificationsController@index');
 Route::delete('profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy');
