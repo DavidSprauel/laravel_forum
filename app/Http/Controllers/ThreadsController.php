@@ -48,6 +48,10 @@ class ThreadsController extends Controller {
         
         $thread = $this->threadBusiness->create(request()->all());
         
+        if(request()->wantsJson()) {
+            return response()->json($thread, 201);
+        }
+        
         return redirect($thread->path())
             ->with('flash', 'Your thread has been published');
     }

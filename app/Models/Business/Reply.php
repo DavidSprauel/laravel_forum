@@ -26,6 +26,10 @@ class Reply extends BaseBusiness {
         return $this->read->getRepliesPaginated($thread, $limit);
     }
     
+    public function setBestReply(ReplyModel $reply) {
+        $reply->thread->update(['best_reply_id' => $reply->id]);
+    }
+    
     
     
     

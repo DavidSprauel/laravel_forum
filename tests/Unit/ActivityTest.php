@@ -37,7 +37,7 @@ class ActivityTest extends TestCase {
         $this->signIn();
         
         $reply = create(Reply::class);
-        $this->assertEquals(2, Activity::count());
+        $this->assertEquals(3, Activity::count());
     }
     
     /** @test */

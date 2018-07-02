@@ -27,6 +27,10 @@ class CreatePostForm extends FormRequest {
     }
     
     public function persist($thread) {
+        if($thread->locked) {
+            return response('Thread is locked', 423);
+        }
+        
         return (new Thread())->addReply($thread, [
             'body' => request('body'),
             'user_id' => auth()->id()

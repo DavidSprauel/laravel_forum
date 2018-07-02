@@ -30,6 +30,8 @@ Route::resource('/replies/{reply}/favorites', FavoritesController::class, [
     'only' => ['store']
 ]);
 
+Route::post('replies/{reply}/best', BestRepliesController::class.'@store')->name('best-replies.store');
+
 Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
 Route::get('profiles/{user}', ProfilesController::class.'@show')->name('profile');
 Route::get('profiles/{user}/notifications', 'UserNotificationsController@index');

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use DB;
 use Forum\Models\Entities\Eloquent\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -12,6 +13,7 @@ abstract class TestCase extends BaseTestCase {
     public function setUp() {
         parent::setUp();
         $this->withoutExceptionHandling();
+        DB::statement('PRAGMA foreign_keys=on;');
     }
     
     protected function signIn($user = null) {

@@ -75,17 +75,24 @@ class CreateThreadsTest extends TestCase {
     /** @test */
     public function a_thread_requires_an_unique_slug() {
         $this->signIn();
-        $thread = create(Thread::class, ['title' => 'Foo Title', 'slug' => 'foo-title']);
+        
+        $thread = create(Thread::class, ['title' => 'Foo Title']);
         
         $this->assertEquals($thread->fresh()->slug, 'foo-title');
-        
-        $this->post(route('threads.store'), $thread->toArray());
-        
-        $this->assertTrue(Thread::whereSlug('foo-title-2')->exists());
     
-        $this->post(route('threads.store'), $thread->toArray());
+        $thread = $this->postJson(route('threads.store'), $thread->toArray())->json();
+
+        $this->assertEquals("foo-title-{$thread['id']}", $thread['slug']);
+    }
     
-        $this->assertTrue(Thread::whereSlug('foo-title-3')->exists());
+    /** @test */
+    public function a_thread_with_a_title_that_ends_with_a_number_should_generate_a_proper_slug() {
+        $this->signIn();
+        $thread = create(Thread::class, ['title' => 'Some Title 24']);
+    
+        $thread = $this->postJson(route('threads.store'), $thread->toArray())->json();
+    
+        $this->assertEquals("some-title-24-{$thread['id']}", $thread['slug']);
     }
     
     public function publishThread($overrides = []) {
