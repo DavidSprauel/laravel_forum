@@ -1,5 +1,6 @@
 
 window._ = require('lodash');
+window.Popper = require('popper.js').default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -10,7 +11,7 @@ window._ = require('lodash');
 try {
     window.$ = window.jQuery = require('jquery');
 
-    require('bootstrap-sass');
+    require('bootstrap');
 } catch (e) {}
 
 /**
@@ -40,12 +41,20 @@ if (token) {
 window.Vue = require('vue');
 window.events = new Vue();
 
-window.Vue.prototype.authorize = function (handler) {
-    let user = window.App.user;
+let authorizations = require('./authorizations');
 
-    return user ? handler(user) : false;
+window.Vue.prototype.authorize = function (...params) {
+    if(! window.App.signedIn) return false;
+
+    if(typeof params[0] === 'string') {
+        return  authorizations[params[0]](params[1]);
+    }
+
+    return params[0](window.App.user);
 };
 
-window.flash = function (message) {
-    window.events.$emit('flash', message);
+Vue.prototype.signedIn = window.App.signedIn;
+
+window.flash = function (message, level = 'success') {
+    window.events.$emit('flash', { message, level });
 };

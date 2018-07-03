@@ -15,11 +15,18 @@ use Faker\Generator as Faker;
 
 $factory->define(Forum\Models\Entities\Eloquent\User::class, function (Faker $faker) {
     static $password;
-
+    
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => $password ?: $password = bcrypt('secret'),
+        'name'           => $faker->name,
+        'email'          => $faker->unique()->safeEmail,
+        'password'       => $password ? : $password = bcrypt('secret'),
         'remember_token' => str_random(10),
+        'confirmed'      => true,
+    ];
+});
+
+$factory->state(\Forum\Models\Entities\Eloquent\User::class, 'unconfirmed', function () {
+    return [
+        'confirmed' => false
     ];
 });

@@ -2,7 +2,7 @@
 
 namespace Forum\Models\Entities\Eloquent;
 
-use Forum\Models\Business\Activity;
+use Forum\Library\Visits;
 use Forum\Models\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,11 +20,14 @@ class Thread extends Model {
         static::deleting(function ($thread) {
             $thread->replies->each->delete();
         });
+        
+        static::created(function ($thread) {
+             $thread->update(['slug' => $thread->title]);
+        });
     }
     
-    
     public function path() {
-        return "/threads/{$this->channel->slug}/{$this->id}";
+        return "/threads/{$this->channel->slug}/{$this->slug}";
     }
     
     public function replies() {
@@ -55,7 +58,7 @@ class Thread extends Model {
     
     public function subscribe($userId = null) {
         $this->subscriptions()->create([
-            'user_id'   => $userId ? : auth()->id(),
+            'user_id' => $userId ? : auth()->id(),
         ]);
         
         return $this;
@@ -65,6 +68,32 @@ class Thread extends Model {
         return $this->subscriptions()
             ->where('user_id', $userId ? : auth()->id())
             ->delete();
+    }
+    
+    public function hasUpdatesFor($user = null) {
+        return $this->updated_at > cache($user->visitedCacheKey($this));
+    }
+    
+    public function visits() {
+        return new Visits($this);
+    }
+    
+    public function getRouteKeyName() {
+        return 'slug';
+    }
+    
+    public function setSlugAttribute($value) {
+        $slug = str_slug($value);
+    
+        if(static::whereSlug($slug)->exists()) {
+            $slug = "{$slug}-". $this->id;
+        }
+        
+        $this->attributes['slug'] = $slug;
+    }
+    
+    public function lock() {
+        $this->update(['locked' => true]);
     }
     
 }

@@ -7,6 +7,6 @@
     @endslot
 
     @slot('body')
-        {{ $activity->subject->body }}
+        {!! nl2br($activity->subject->body) !!}
     @endslot
 @endcomponent

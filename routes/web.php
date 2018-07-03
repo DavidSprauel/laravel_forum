@@ -30,6 +30,9 @@ Route::resource('/replies/{reply}/favorites', FavoritesController::class, [
     'only' => ['store']
 ]);
 
+Route::post('replies/{reply}/best', BestRepliesController::class.'@store')->name('best-replies.store');
+
+Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
 Route::get('profiles/{user}', ProfilesController::class.'@show')->name('profile');
 Route::get('profiles/{user}/notifications', 'UserNotificationsController@index');
 Route::delete('profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy');
@@ -42,4 +45,8 @@ Route::post('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionContro
 Route::delete('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionController::class.'@destroy');
 
 Route::delete('/replies/{reply}/favorites', FavoritesController::class.'@destroy');
+
+
+Route::resource('api/users', 'Api\UsersController');
+Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
 

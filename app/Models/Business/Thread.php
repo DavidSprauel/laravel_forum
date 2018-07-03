@@ -4,6 +4,7 @@
 namespace Forum\Models\Business;
 
 
+use Forum\Events\ThreadReceivedNewReply;
 use Forum\Models\DataAccess\Read\Thread as ThreadRead;
 use Forum\Models\DataAccess\Write\Thread as ThreadWrite;
 use Forum\Models\Entities\Eloquent\Channel;
@@ -17,11 +18,18 @@ class Thread extends BaseBusiness {
     }
     
     public function addReply(ThreadModel $thread, array $request) {
-        return $this->write->addReply($thread, $request);
+        $reply = $this->write->addReply($thread, $request);
+        
+        return $reply;
     }
     
-    public function create($fields) {
-        return $this->write->create($fields);
+    public function create($request) {
+        return $this->write->create([
+            'user_id' => auth()->id(),
+            'channel_id' => $request['channel_id'],
+            'title' => $request['title'],
+            'body' => $request['body'],
+        ]);
     }
     
     public function latestWithFilter(Channel $channel = null, $filters) {

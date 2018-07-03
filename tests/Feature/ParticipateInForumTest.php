@@ -101,4 +101,29 @@ class ParticipateInForumTest extends TestCase {
             ->patch("/replies/{$reply->id}")
             ->assertStatus(403);
     }
+    
+    /** @test */
+    public function replies_that_contains_spam_will_not_be_created() {
+        $this->withExceptionHandling()->signIn();
+        
+        $reply = make(Reply::class, [
+            'body' => 'Yahoo Customer support'
+        ]);
+        
+        $this->json('post', $this->thread->path() . '/replies', $reply->toArray())
+            ->assertStatus(422);
+    }
+    
+    /** @test */
+    public function users_may_only_reply_once_per_minute() {
+        $this->withExceptionHandling()->signIn();
+        
+        $reply = make(Reply::class);
+        
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
+            ->assertStatus(201);
+    
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
+            ->assertStatus(429);
+    }
 }

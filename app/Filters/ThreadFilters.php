@@ -10,7 +10,7 @@ class ThreadFilters extends Filters {
     
     protected function by($username) {
         $userBusiness = new User;
-        $user = $userBusiness->getBy(['name' => $username]);
+        $user = $userBusiness->getByFirst(['name' => $username]);
         
         return $this->builder->where('user_id', $user->id);
     }

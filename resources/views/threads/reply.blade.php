@@ -15,7 +15,7 @@
                 @endif
             </div>
         </div>
-        <div class="panel-body">nThr
+        <div class="panel-body">
             <div v-if="editing">
                 <div class="form-group">
                     <textarea class="form-control" v-model="body"></textarea>

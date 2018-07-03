@@ -2,15 +2,17 @@
 
 namespace Forum\Http\Controllers;
 
+use Carbon\Carbon;
+use Forum\Http\Forms\CreatePostForm;
 use Forum\Models\Business\Reply;
 use Forum\Models\Business\Thread as ThreadBusiness;
-use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Reply as ReplyModel;
 use Forum\Models\Entities\Eloquent\Thread;
-use Illuminate\Http\Request;
+use Forum\Rules\SpamFree;
+use Gate;
 
-class RepliesController extends Controller
-{
+class RepliesController extends Controller {
+    
     protected $replyBusiness;
     protected $threadBusiness;
     protected $limit;
@@ -27,25 +29,15 @@ class RepliesController extends Controller
         return $this->replyBusiness->getRepliesPaginated($thread, $this->limit);
     }
     
-    public function store($channel, Thread $thread) {
-        $this->validate(request(), [
-            'body' => 'required'
-        ]);
-        
-        $reply = $this->threadBusiness->addReply($thread, [
-            'body' => request('body'),
-            'user_id' => auth()->id()
-        ]);
-        
-        if(request()->expectsJson()) {
-            return $reply->load('owner');
-        }
-        
-        return back()->with('flash', 'Your reply has been left.');
+    public function store($channel, Thread $thread, CreatePostForm $form) {
+        return $form->persist($thread);
     }
     
     public function update(ReplyModel $reply) {
         $this->authorize('update', $reply);
+        
+        $this->validate(request(), ['body' => ['required', new SpamFree]]);
+        
         return $this->replyBusiness->update($reply, request()->all());
     }
     
@@ -54,7 +46,7 @@ class RepliesController extends Controller
         
         $this->replyBusiness->delete($reply);
         
-        if(request()->expectsJson()) {
+        if (request()->expectsJson()) {
             return response(['status' => 'Reply deleted']);
         }
         

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use Carbon\Carbon;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread;
@@ -10,6 +11,7 @@ use Forum\Notifications\ThreadWasUpdated;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Notification;
+use Redis;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -24,9 +26,9 @@ class ThreadTest extends TestCase {
     }
     
     /** @test */
-    public function a_thread_can_make_a_string_path() {
+    public function a_thread_has_a_path() {
         $this->assertEquals(
-            "/threads/{$this->thread->channel->slug}/{$this->thread->id}",
+            "/threads/{$this->thread->channel->slug}/{$this->thread->slug}",
             $this->thread->path()
         );
     }
@@ -63,6 +65,7 @@ class ThreadTest extends TestCase {
             'user_id' => 999
         ]);
         
+        
         Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);
     }
     
@@ -95,5 +98,38 @@ class ThreadTest extends TestCase {
         $this->assertFalse($this->thread->isSubscribedTo);
         $this->thread->subscribe();
         $this->assertTrue($this->thread->isSubscribedTo);
+    }
+    
+    /** @test */
+    public function a_thread_can_check_if_the_authenticated_user_has_read_all_replies() {
+        $this->signIn();
+        tap(auth()->user(), function($user) {
+            $this->assertTrue($this->thread->hasUpdatesFor($user));
+    
+            $user->read($this->thread);
+    
+            $this->assertFalse($this->thread->hasUpdatesFor($user));
+        });
+    }
+    
+    /** @test */
+    public function a_thread_records_each_visits() {
+    
+        $this->thread->visits()->reset();
+        $this->assertSame(0, $this->thread->visits()->count());
+        
+        $this->thread->visits()->record();
+        $this->assertEquals(1, $this->thread->visits()->count());
+
+        $this->thread->visits()->record();
+        $this->assertEquals(2, $this->thread->visits()->count());
+    }
+    
+    /** @test */
+    public function a_thread_may_be_locked() {
+        $this->assertFalse($this->thread->locked);
+        $this->thread->lock();
+        
+        $this->assertTrue($this->thread->locked);
     }
 }

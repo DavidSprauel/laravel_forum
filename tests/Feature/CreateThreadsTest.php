@@ -6,6 +6,7 @@ use Forum\Models\Entities\Eloquent\Activity;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Reply;
 use Forum\Models\Entities\Eloquent\Thread;
+use Forum\Models\Entities\Eloquent\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -18,19 +19,30 @@ class CreateThreadsTest extends TestCase {
     public function guests_may_not_create_threads() {
         $this->withExceptionHandling();
         
-        $this->get('/threads/create')
-            ->assertRedirect('/login');
+        $this->get(route('threads.create'))
+            ->assertRedirect(route('login'));
         
-        $this->post('/threads')
-            ->assertRedirect('/login');
+        $this->post(route('threads.store'))
+            ->assertRedirect(route('login'));
     }
     
     /** @test */
-    public function an_authenticated_user_can_create_new_forum_threads() {
+    public function new_users_must_first_confirm_their_email_address_before_creating_threads() {
+        $user = factory(User::class)->states('unconfirmed')->create();
+        $this->signIn($user);
+        $thread = make(Thread::class);
+        
+        $this->post(route('threads.store'), $thread->toArray())
+            ->assertRedirect(route('threads.index'))
+            ->assertSessionHas('flash');
+    }
+    
+    /** @test */
+    public function an_user_can_create_new_forum_threads() {
         $this->signIn();
         
         $thread = make(Thread::class);
-        $response = $this->post('/threads', $thread->toArray());
+        $response = $this->post(route('threads.store'), $thread->toArray());
         
         $this->get($response->headers->get('Location'))
             ->assertSee($thread->title)
@@ -55,16 +67,39 @@ class CreateThreadsTest extends TestCase {
         
         $this->publishThread(['channel_id' => null])
             ->assertSessionHasErrors('channel_id');
-    
+        
         $this->publishThread(['channel_id' => 999])
             ->assertSessionHasErrors('channel_id');
+    }
+    
+    /** @test */
+    public function a_thread_requires_an_unique_slug() {
+        $this->signIn();
+        
+        $thread = create(Thread::class, ['title' => 'Foo Title']);
+        
+        $this->assertEquals($thread->fresh()->slug, 'foo-title');
+    
+        $thread = $this->postJson(route('threads.store'), $thread->toArray())->json();
+
+        $this->assertEquals("foo-title-{$thread['id']}", $thread['slug']);
+    }
+    
+    /** @test */
+    public function a_thread_with_a_title_that_ends_with_a_number_should_generate_a_proper_slug() {
+        $this->signIn();
+        $thread = create(Thread::class, ['title' => 'Some Title 24']);
+    
+        $thread = $this->postJson(route('threads.store'), $thread->toArray())->json();
+    
+        $this->assertEquals("some-title-24-{$thread['id']}", $thread['slug']);
     }
     
     public function publishThread($overrides = []) {
         $this->withExceptionHandling()->signIn();
         $thread = make(Thread::class, $overrides);
-    
-        return $this->post('/threads', $thread->toArray());
+        
+        return $this->post(route('threads.store'), $thread->toArray());
     }
     
     /** @test */
@@ -81,16 +116,11 @@ class CreateThreadsTest extends TestCase {
     }
     
     /** @test */
-//    public function thread_can_only_be_deleted_by_those_who_have_permission() {
-//
-//    }
-    
-    /** @test */
     public function authorized_users_can_delete_threads() {
         $this->signIn();
         $thread = create(Thread::class, ['user_id' => auth()->id()]);
         $reply = create(Reply::class, ['thread_id' => $thread->id]);
-    
+        
         $response = $this->json('DELETE', $thread->path());
         $response->assertStatus(204);
         
@@ -98,12 +128,12 @@ class CreateThreadsTest extends TestCase {
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
         
         $this->assertDatabaseMissing('activities', [
-            'subject_id' => $thread->id,
+            'subject_id'   => $thread->id,
             'subject_type' => get_class($thread),
         ]);
-    
+        
         $this->assertDatabaseMissing('activities', [
-            'subject_id' => $reply->id,
+            'subject_id'   => $reply->id,
             'subject_type' => get_class($reply),
         ]);
     }

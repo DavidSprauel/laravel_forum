@@ -21,4 +21,12 @@ abstract class BaseBusiness {
         return $this->write->delete($entity);
     }
     
+    public function getBy($where, $first = false, $nb = null) {
+        return $this->read->getBy($where, $first, $nb);
+    }
+    
+    public function getByFirst($where) {
+        return $this->read->getBy($where, true);
+    }
+    
 }
