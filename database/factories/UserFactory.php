@@ -30,3 +30,9 @@ $factory->state(\Forum\Models\Entities\Eloquent\User::class, 'unconfirmed', func
         'confirmed' => false
     ];
 });
+
+$factory->state(\Forum\Models\Entities\Eloquent\User::class, 'admin', function () {
+    return [
+        'name' => 'JohnDoe'
+    ];
+});

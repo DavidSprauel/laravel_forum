@@ -71,8 +71,8 @@ class ThreadsController extends Controller {
         //
     }
     
-    public function update(Request $request, Thread $thread) {
-        //
+    public function update($channelId, Thread $thread) {
+    
     }
     
     public function destroy(Channel $channel, Thread $thread) {

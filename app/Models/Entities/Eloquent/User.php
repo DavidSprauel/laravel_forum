@@ -62,4 +62,8 @@ class User extends Authenticatable {
     public function getAvatarPathAttribute($avatar) {
         return asset($avatar ?? 'avatars/default.png');
     }
+    
+    public function isAdmin() {
+        return in_array($this->name, ['JohnDoe', 'JaneDoe']);;
+    }
 }

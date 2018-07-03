@@ -19,7 +19,7 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('threads', ThreadsController::class, ['except' => 'show']);
+Route::resource('threads', ThreadsController::class, ['except' => ['show', 'update']]);
 Route::resource('replies', RepliesController::class, [
     'only' => ['destroy', 'update']
 ]);
@@ -30,21 +30,25 @@ Route::resource('/replies/{reply}/favorites', FavoritesController::class, [
     'only' => ['store']
 ]);
 
-Route::post('replies/{reply}/best', BestRepliesController::class.'@store')->name('best-replies.store');
+Route::post('replies/{reply}/best', BestRepliesController::class . '@store')->name('best-replies.store');
+
+Route::post('locked-threads/{thread}', LockedThreadsController::class.'@store')->name('locked-threads.store')->middleware('admin');
+Route::delete('locked-threads/{thread}', LockedThreadsController::class.'@destroy')->name('locked-threads.destroy')->middleware('admin');
 
 Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
-Route::get('profiles/{user}', ProfilesController::class.'@show')->name('profile');
+Route::get('profiles/{user}', ProfilesController::class . '@show')->name('profile');
 Route::get('profiles/{user}/notifications', 'UserNotificationsController@index');
 Route::delete('profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy');
 
-Route::get('threads/{channel}/{thread}', ThreadsController::class.'@show');
-Route::delete('threads/{channel}/{thread}', ThreadsController::class.'@destroy');
-Route::get('threads/{channel}', ThreadsController::class.'@index');
+Route::get('threads/{channel}/{thread}', ThreadsController::class . '@show');
+Route::patch('threads/{channel}/{thread}', ThreadsController::class . '@update');
+Route::delete('threads/{channel}/{thread}', ThreadsController::class . '@destroy');
+Route::get('threads/{channel}', ThreadsController::class . '@index');
 
-Route::post('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionController::class.'@store');
-Route::delete('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionController::class.'@destroy');
+Route::post('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionController::class . '@store');
+Route::delete('threads/{channel}/{thread}/subscriptions', ThreadSubscriptionController::class . '@destroy');
 
-Route::delete('/replies/{reply}/favorites', FavoritesController::class.'@destroy');
+Route::delete('/replies/{reply}/favorites', FavoritesController::class . '@destroy');
 
 
 Route::resource('api/users', 'Api\UsersController');

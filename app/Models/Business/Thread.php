@@ -46,4 +46,12 @@ class Thread extends BaseBusiness {
         return redirect('/threads');
     }
     
+    public function lock(ThreadModel $thread) {
+        $thread->update(['locked' => true]);
+    }
+    
+    public function unlock(ThreadModel $thread) {
+        $thread->update(['locked' => false]);
+    }
+    
 }
