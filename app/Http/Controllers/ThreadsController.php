@@ -7,8 +7,8 @@ use Forum\Library\Trending;
 use Forum\Models\Business\Thread as ThreadBusiness;
 use Forum\Models\Entities\Eloquent\Channel;
 use Forum\Models\Entities\Eloquent\Thread;
+use Forum\Rules\Recaptcha;
 use Forum\Rules\SpamFree;
-use Illuminate\Http\Request;
 
 class ThreadsController extends Controller {
     
@@ -28,9 +28,9 @@ class ThreadsController extends Controller {
         if (request()->wantsJson()) {
             return $threads;
         }
-    
+        
         return view('threads.index', [
-            'threads' => $threads,
+            'threads'  => $threads,
             'trending' => $trending->get()
         ]);
     }
@@ -39,16 +39,17 @@ class ThreadsController extends Controller {
         return view('threads.create');
     }
     
-    public function store() {
+    public function store(Recaptcha $recaptcha) {
         request()->validate([
-            'title'      => ['required', new SpamFree],
-            'body'       => ['required', new SpamFree],
-            'channel_id' => 'required|exists:channels,id',
+            'title'                => ['required', new SpamFree],
+            'body'                 => ['required', new SpamFree],
+            'channel_id'           => 'required|exists:channels,id',
+            'g-recaptcha-response' => ['required', $recaptcha]
         ]);
         
         $thread = $this->threadBusiness->create(request()->all());
         
-        if(request()->wantsJson()) {
+        if (request()->wantsJson()) {
             return response()->json($thread, 201);
         }
         
@@ -71,16 +72,22 @@ class ThreadsController extends Controller {
         //
     }
     
-    public function update($channelId, Thread $thread) {
+    public function update($channelId, Thread $thread, Recaptcha $recaptcha) {
+        $this->authorize('update', $thread);
     
+        $this->threadBusiness->update($thread,  request()->validate([
+            'title'                => ['required', new SpamFree],
+            'body'                 => ['required', new SpamFree],
+//            'g-recaptcha-response' => ['required', $recaptcha]
+        ]));
+        
+        return $thread->fresh();
     }
     
     public function destroy(Channel $channel, Thread $thread) {
         $this->authorize('update', $thread);
         
-        $return = $this->threadBusiness->deleteOne($thread);
-        
-        return $return;
+        return $this->threadBusiness->deleteOne($thread);
     }
     
     private function getThreads(Channel $channel = null, ThreadFilters $filters) {

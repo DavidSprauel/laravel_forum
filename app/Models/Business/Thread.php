@@ -32,6 +32,13 @@ class Thread extends BaseBusiness {
         ]);
     }
     
+    public function update(ThreadModel $thread, $request) {
+        return $this->write->update($thread, [
+            'title' => $request['title'] ?? $thread->title,
+            'body' => $request['body']?? $thread->body,
+        ]);
+    }
+    
     public function latestWithFilter(Channel $channel = null, $filters) {
         return $this->read->latestWithFilter($channel, $filters);
     }

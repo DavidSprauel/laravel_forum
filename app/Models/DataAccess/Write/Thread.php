@@ -12,6 +12,10 @@ class Thread extends BaseWriter {
         $this->model = ThreadModel::class;
     }
     
+    public function update(ThreadModel $entity, $fields) {
+        return $entity->update($fields);
+    }
+    
     public function addReply(ThreadModel $thread, array $request) {
         return $thread->replies()->create($request);
     }

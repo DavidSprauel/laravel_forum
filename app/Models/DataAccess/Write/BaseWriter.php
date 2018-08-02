@@ -4,6 +4,9 @@
 namespace Forum\Models\DataAccess\Write;
 
 
+use Forum\Models\Entities\Eloquent\Thread;
+use Illuminate\Database\Eloquent\Model;
+
 abstract class BaseWriter {
     
     protected $model;
