@@ -8,38 +8,10 @@
     <thread-view inline-template :thread="{{ $thread }}">
         <div class="container">
             <div class="row">
-                <div class="col-md-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="level">
-                                <img src="{{ $thread->creator->avatar_path }}"
-                                     width="25" height="25"
-                                     class="mr-1"
-                                     alt="{{ $thread->creator->name }}">
-                                <span class="flex">
-                                <a href="{{ $thread->creator->profilePath() }}">{{ $thread->creator->name }}</a> posted:
-                                    {{ $thread->title }}
-                                </span>
+                <div class="col-md-8" v-cloak>
+                    @include('threads._question')
 
-                                @can('update', $thread)
-                                    <form method="POST" action="{{ $thread->path() }}">
-                                        {{ csrf_field() }}
-                                        {{ method_field('DELETE') }}
-                                        <button type="submit" class="btn btn-link">Delete Thread</button>
-                                    </form>
-                                @endcan
-                            </div>
-
-                        </div>
-
-                        <div class="panel-body text-justify">
-                            {!! nl2br($thread->body) !!}
-                        </div>
-                    </div>
-
-                    <replies @removed="repliesCount--"
-                             @added="repliesCount++"></replies>
-
+                    <replies @removed="repliesCount--" @added="repliesCount++"></replies>
                 </div>
 
                 <div class="col-md-4">
@@ -52,10 +24,7 @@
                                 {{ str_plural('comment', $thread->replies_count) }}
                             </p>
                             <p>
-                                <subscribe-button
-                                        v-if="signedIn"
-                                        :thread="{{ $thread }}">
-                                </subscribe-button>
+                                <subscribe-button v-if="signedIn" :thread="{{ $thread }}"></subscribe-button>
 
                                 <button class="btn btn-default"
                                         v-if="authorize('isAdmin')"
