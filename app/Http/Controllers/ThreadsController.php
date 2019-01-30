@@ -40,6 +40,7 @@ class ThreadsController extends Controller {
     }
     
     public function store(Recaptcha $recaptcha) {
+
         request()->validate([
             'title'                => ['required', new SpamFree],
             'body'                 => ['required', new SpamFree],

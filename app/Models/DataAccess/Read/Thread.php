@@ -22,5 +22,10 @@ class Thread  extends BaseReader {
         
         return $threads->paginate(25);
     }
+
+    public function search($query)
+    {
+        return $this->model::search($query)->paginate(25);
+    }
     
 }

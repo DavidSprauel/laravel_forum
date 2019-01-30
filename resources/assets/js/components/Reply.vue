@@ -17,7 +17,7 @@
             <div v-if="editing">
                 <form @submit.prevent="update">
                     <div class="form-group">
-                        <textarea class="form-control" v-model="body" required></textarea>
+                        <wysiwig v-model="body"></wysiwig>
                     </div>
 
                     <button class="btn btn-xs btn-primary" type="submit">Update</button>
@@ -45,11 +45,12 @@
 <script>
     import Favorite from './Favorite.vue';
     import moment from 'moment';
+    import Wysiwig from "./Wysiwig";
 
     export default {
         props: ['reply'],
 
-        components: {Favorite},
+        components: {Wysiwig, Favorite},
 
         computed: {
             ago() {

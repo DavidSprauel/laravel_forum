@@ -5,10 +5,11 @@ namespace Forum\Models\Entities\Eloquent;
 use Forum\Library\Visits;
 use Forum\Models\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Thread extends Model {
     
-    use RecordsActivity;
+    use RecordsActivity, Searchable;
     
     protected $guarded = [];
     protected $with = ['creator', 'channel'];
@@ -93,5 +94,15 @@ class Thread extends Model {
         }
         
         $this->attributes['slug'] = $slug;
+    }
+
+    public function toSearchableArray()
+    {
+        return $this->toArray() + ['path' => $this->path()];
+    }
+
+    public function getBodyAttribute($body)
+    {
+        return \Purify::clean($body);
     }
 }

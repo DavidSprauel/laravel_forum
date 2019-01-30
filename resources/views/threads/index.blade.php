@@ -9,6 +9,22 @@
                 {{ $threads->render() }}
             </div>
             <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Search
+                    </div>
+
+                    <div class="panel-body">
+                        <form method="GET" action="/threads/search">
+                            <div class="form-group">
+                                <input type="text" placeholder="Search for threads..." name="q" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-default btn-block">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 @if(count($trending))
                     <div class="panel panel-default">
                         <div class="panel-heading">

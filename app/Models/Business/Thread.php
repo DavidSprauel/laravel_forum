@@ -60,5 +60,10 @@ class Thread extends BaseBusiness {
     public function unlock(ThreadModel $thread) {
         $thread->update(['locked' => false]);
     }
+
+    public function search($query)
+    {
+        return $this->read->search($query);
+    }
     
 }

@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="panel-body text-justify">
-            <div class="body">{!! nl2br($thread->body) !!}</div>
+            <div class="body">{!! $thread->body !!}</div>
         </div>
 
         <div class="panel-footer">

@@ -19,6 +19,8 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::view('scan', 'scan');
+
 Route::resource('threads', ThreadsController::class, ['except' => ['show', 'update']]);
 Route::resource('replies', RepliesController::class, [
     'only' => ['destroy', 'update']
@@ -40,6 +42,7 @@ Route::get('profiles/{user}', ProfilesController::class . '@show')->name('profil
 Route::get('profiles/{user}/notifications', 'UserNotificationsController@index');
 Route::delete('profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy');
 
+Route::get('threads/search', SearchController::class.'@show');
 Route::get('threads/{channel}/{thread}', ThreadsController::class . '@show');
 Route::patch('threads/{channel}/{thread}', ThreadsController::class . '@update');
 Route::delete('threads/{channel}/{thread}', ThreadsController::class . '@destroy');
